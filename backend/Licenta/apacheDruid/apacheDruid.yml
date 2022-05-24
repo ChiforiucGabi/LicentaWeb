@@ -1,0 +1,35 @@
+---
+- name: install apache-druid server
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    become: true
+    apt:
+      update_cache: yes
+
+  - name: Install Java 8
+    become: yes
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+         - openjdk-8-jre-headless
+
+  - name: download druid packages
+    get_url:
+      url: https://dlcdn.apache.org/druid/0.22.0/apache-druid-0.22.0-bin.tar.gz
+      dest: /usr/local
+
+  - name: extract druid packages
+    unarchive:
+      src: /usr/local/apache-druid-0.22.0-bin.tar.gz
+      dest: /usr/local
+      remote_src: yes
+
+  - name: start druid services
+    shell: sudo ./start-micro-quickstart &
+    args:
+      chdir: /usr/local/apache-druid-0.22.0/bin

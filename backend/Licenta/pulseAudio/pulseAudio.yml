@@ -1,0 +1,41 @@
+---
+- name: Install Pulse
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Install libasound2
+    apt: name=libasound2 state=latest
+
+  - name: Install libasound2-plugins
+    apt: name=libasound2-plugins state=latest
+  
+  - name: Install alsa-utils
+    apt: name=alsa-utils state=latest
+  
+  - name: Install alsa-oss
+    apt: name=alsa-oss state=latest
+
+  - name: Install pulseaudio
+    apt: name=pulseaudio state=latest
+
+  - name: Install pulseaudio-utils
+    apt: name=pulseaudio-utils state=latest
+  
+  - name: Create a temporary local script to set group membership
+    copy:
+      dest: runComm.sh
+      content: 'sudo usermod -aG pulse,pulse-access $(whoami)'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: runComm.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: runComm.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true

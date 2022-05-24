@@ -1,0 +1,20 @@
+---
+- name: Install MySQL database server
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: true
+  tasks:
+        - name: Update the software package repository
+          yum:
+                update_cache: yes
+
+        - name: Install MySQL
+          package:
+                name: "{{ item }}"
+                state: latest
+
+          with_items:
+              - mysql-server
+              - mysql-client
+              - python3-mysqldb

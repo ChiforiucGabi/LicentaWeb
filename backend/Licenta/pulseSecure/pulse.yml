@@ -1,0 +1,31 @@
+---
+- name: Install Pulse Secure 
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Install libcurl4
+    apt: name=libcurl4 state=latest
+
+  - name: Install libnss3-tools
+    apt: name=libnss3-tools state=latest
+
+  - name: Create a temporary local script to install pulsesecure_9.1.R12_amd64.deb
+    copy:
+      dest: runComm.sh
+      content: 'sudo dpkg -i pulsesecure_9.1.R12_amd64.deb'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: runComm.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: runComm.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  

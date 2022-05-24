@@ -1,0 +1,51 @@
+---
+- name: install apacheany23
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    become: true
+    apt:
+      update_cache: yes
+
+  - name: Install Java 8
+    become: yes
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+         - openjdk-11-jdk
+
+  - name: "Check if path exists"
+    ansible.builtin.command: grep jvm /etc/environment
+    register: java_path
+    ignore_errors: true
+
+  - name: Change /etc/environement
+    script: comm.sh
+    when: java_path.stdout==""
+
+  - name: install unzip
+    script: unzip_install.sh
+
+  - name: download any23 packages
+    get_url:
+      url: https://dlcdn.apache.org/any23/2.7/apache-any23-cli-2.7.tar.gz
+      dest: /usr/local
+
+  - name: extract any23 packages
+    ansible.builtin.unarchive:
+      src: /usr/local/apache-any23-cli-2.7.tar.gz
+      dest: /usr/local/
+      remote_src: yes
+
+  - name: "Check if any23 path exists"
+    ansible.builtin.command: grep any23 /etc/environment
+    register: any23_path
+    ignore_errors: true
+
+  - name: Change /etc/environement
+    script: any23_path.sh
+    when: any23_path.stdout==""

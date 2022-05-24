@@ -1,0 +1,112 @@
+---
+- name: Install SMTP
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Update
+    apt: update_cache=yes
+
+  - name: Install bind9
+    apt: name=bind9 state=latest
+
+  - name: Remove /var/cache/bind/db.test (delete file)
+    ansible.builtin.file:
+      path: /var/cache/bind/db.test
+      state: absent
+
+  - name: Get IP
+    shell: wget -qO- http://ipecho.net/plain ; echo
+    register: machine_ip
+
+  - name: Copy db.test
+    template: src=db.test.j2 dest=/var/cache/bind/db.test
+      mode=0644
+
+  - name: Create a temporary local script to run named-checkzone
+    copy:
+      dest: runComm.sh
+      content: 'sudo named-checkzone test.com. /var/cache/bind/db.test'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: runComm.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: runComm.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: Append data
+    blockinfile:
+      path: /etc/bind/named.conf.default-zones
+      block: |
+        zone "test.com." {
+              type master;
+              file "db.test";
+        };
+      marker: ""
+  
+  - name: Remove /etc/bind/named.conf.options (delete file)
+    ansible.builtin.file:
+      path: /etc/bind/named.conf.options
+      state: absent
+
+  - name: Copy named.conf.options new
+    template: src=db.test.j2 dest=/etc/bind/named.conf.options
+      mode=0644
+
+  - name: Restart bind9
+    service: name=bind9 state=restarted
+
+  - name: Install postfix
+    apt: name=postfix state=latest
+
+  - name: Create a temporary local script to add user
+    copy:
+      dest: runComm.sh
+      content: 'sudo usermod -aG mail $(whoami)'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: runComm.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: runComm.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: "Check if user exists"
+    ansible.builtin.command: getent passwd test
+    register: user_exists
+    ignore_errors: true
+
+  - name: Create a temporary local script to add mail
+    copy:
+      dest: runComm.sh
+      content: 'sudo useradd -m -G mail -s /bin/bash/ test'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: runComm.sh
+    when: user_exists.stdout == ""
+
+  - name: Remove the temporary local script
+    file:
+      path: runComm.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+  
+  - name: Install mailutils
+    apt: name=mailutils state=latest

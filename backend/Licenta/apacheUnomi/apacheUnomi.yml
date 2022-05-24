@@ -1,0 +1,67 @@
+---
+- name: Install Apache Unomi
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    become: true
+    apt:
+      update_cache: yes
+
+  - name: Install Java 8
+    become: yes
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+         - openjdk-8-jdk
+
+  - name: "Check if path exists"
+    ansible.builtin.command: grep jvm /etc/environment
+    register: java_path
+    ignore_errors: true
+
+  - name: Change /etc/environement
+    script: comm.sh
+    when: java_path.stdout==""
+
+  - name: Source env
+    shell: /bin/bash -c "source /etc/environment"
+
+  - name: Install Elastic Search
+    become: yes
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+         - apt-transport-https
+         - curl
+         - wget
+  
+  - name: download elasticsearch-5.6.3.deb
+    get_url:
+      url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.3.deb
+      dest: /usr/local
+
+  - name: dpkg elastic search
+    script: elastic.sh
+
+  - name: uncomment line
+    script: uncomment.sh
+
+  - name: start elasticsearch
+    service: name=elasticsearch state=started
+
+  - name: download UNOMI 1.5.4
+    get_url:
+      url: http://apache.mirrors.pair.com/unomi/1.5.4/unomi-1.5.4-bin.tar.gz
+      dest: /usr/local
+
+  - name: extract unomi packages
+    unarchive:
+      src: /usr/local/unomi-1.5.4-bin.tar.gz
+      dest: /usr/local
+      remote_src: yes

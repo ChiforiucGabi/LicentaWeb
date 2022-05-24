@@ -1,0 +1,9 @@
+- hosts: all
+  become: yes
+  tasks:
+
+    - name: Update
+      apt: update_cache=yes   
+   
+    - name: Installing Samba
+      apt: name=samba state=latest

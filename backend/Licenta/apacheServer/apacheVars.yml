@@ -1,0 +1,6 @@
+---
+app_user: "gchiforiuc"
+http_host: "ApacheTest"
+http_conf: "ApacheTest.conf"
+http_port: "80"
+disable_default: true

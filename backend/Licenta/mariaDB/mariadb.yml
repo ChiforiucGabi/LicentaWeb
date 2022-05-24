@@ -1,0 +1,23 @@
+---
+- name: Installing mariaDB 
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Install Utility software
+    apt: name=software-properties-common state=latest update_cache=yes
+
+  - name: Install Utility software 2
+    apt: name=python3-mysqldb state=latest update_cache=yes
+
+  - name: Add apt key
+    command: apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc'
+
+  - name: Add MariaDB Repo
+    apt_repository:
+      filename: MariaDB-10.2
+      repo: deb [arch=amd64,arm64,ppc64el] https://mirrors.chroot.ro/mariadb/repo/10.6/ubuntu bionic main
+      state: present
+
+  - name: Install MariaDB Server
+    apt: name=mariadb-server state=latest update_cache=yes

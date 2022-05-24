@@ -1,0 +1,1 @@
+sudo sed -ri "s:^([ ]*)[#]+[ ]?([ ]*cluster.name):\\1\\2:" /etc/elasticsearch/elasticsearch.yml

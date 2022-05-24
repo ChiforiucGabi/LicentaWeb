@@ -1,0 +1,38 @@
+- hosts: all
+  become: yes
+  tasks:
+
+    - name: Update
+      apt: update_cache=yes   
+   
+    - name: Installing FTP
+      apt: name=vsftpd state=latest
+
+    - name: Start vsftdp
+      ansible.builtin.command: systemctl start vsftpd
+      become: yes
+
+    - name: Enable vsftdp
+      ansible.builtin.command: systemctl enable vsftpd
+      become: yes
+
+    - name: Copy /etc/vsftpd.conf
+      ansible.builtin.command: cp /etc/vsftpd.conf  /etc/vsftpd.conf_default
+      become: yes
+
+    - name: "Check if user exists"
+      ansible.builtin.command: getent passwd testuser
+      register: user_exists
+      ignore_errors: true
+
+    - name: Create user
+      user: name=testuser password=123
+      when: user_exists.stdout == ""
+
+    - name: Allow 20/tcp
+      ansible.builtin.command: ufw allow 20/tcp
+      become: yes
+
+    - name: Allow 21/tcp
+      ansible.builtin.command: ufw allow 21/tcp
+      become: yes

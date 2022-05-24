@@ -1,0 +1,201 @@
+---
+- name: Install LARAVEL
+  hosts: all
+  become: true
+
+  tasks:
+
+  - name: Update
+    apt: update_cache=yes
+
+  - name: Install Apache
+    apt: name=apache2 update_cache=yes state=latest
+
+  - name: Start Apache 2
+    ansible.builtin.command: systemctl start apache2
+    become: yes
+
+  - name: Enable Apache 2
+    ansible.builtin.command: systemctl enable apache2
+    become: yes
+
+  - name: Install php
+    apt: name=php state=latest
+    become: yes
+
+  - name: Install libapache2-mod-php
+    apt: name=libapache2-mod-php state=latest
+
+  - name: Install php-mbstring
+    apt: name=php-mbstring state=latest
+
+  - name: Install php-cli
+    apt: name=php-cli state=latest
+
+  - name: Install php-bcmath
+    apt: name=php-bcmath state=latest
+
+  - name: Install php-json
+    apt: name=php-json state=latest
+
+  - name: Install php-xml
+    apt: name=php-xml state=latest
+
+  - name: Install php-zip
+    apt: name=php-zip state=latest
+
+  - name: Install php-pdo
+    apt: name=php-pdo state=latest
+
+  - name: Install php-common
+    apt: name=php-common state=latest
+
+  - name: Install php-tokenizer
+    apt: name=php-tokenizer state=latest
+
+  - name: Install php-mysql
+    apt: name=php-mysql state=latest
+  
+  - name: Install mariadb-server
+    apt: name=mariadb-server state=latest
+
+  - name: Create a temporary local script to curl composer
+    copy:
+      dest: intallComp.sh
+      content: curl -sS https://getcomposer.org/installer | php
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: intallComp.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: intallComp.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: Create a temporary local script to move composer
+    copy:
+      dest: move.sh
+      content: mv composer.phar  /usr/local/bin/composer
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: move.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: move.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: Create a temporary local script to add permission
+    copy:
+      dest: permission.sh
+      content: chmod +x   /usr/local/bin/composer
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: permission.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: permission.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: Remove the temporary local script
+    file:
+      path: move.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: Create a temporary local script to chd dir
+    copy:
+      dest: cdhr.sh
+      content: cd /var/www/html
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: cdhr.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: cdhr.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: "Check if laravel exists"
+    register: laravel_exists
+    stat: 
+      path: /home/gchiforiuc/laravelapp/
+    ignore_errors: true
+
+  - name: Debug
+    debug:
+      msg: "The file or directory exists"
+    when: laravel_exists.stat.exists
+
+  - name: Install laravel
+    ansible.builtin.shell:
+      cmd: composer create-project laravel/laravel laravelapp
+      stdin: 'yes\n'
+    become: yes
+    when: not laravel_exists.stat.exists
+
+  - name: Vopy config file
+    copy:
+      src: laravel.conf
+      dest: /etc/apache2/sites-available/laravel.conf
+
+  - name: Create a temporary local script to run a2ensite laravel.conf
+    copy:
+      dest: a2ensite.sh
+      content: 'sudo a2ensite laravel.conf'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: a2ensite.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: a2ensite.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: Create a temporary local script to run a2enmod rewrite
+    copy:
+      dest: a2enmod.sh
+      content: 'sudo a2enmod rewrite'
+    delegate_to: localhost
+    no_log: True
+    run_once: true
+
+  - name: Apply script
+    script: a2enmod.sh
+
+  - name: Remove the temporary local script
+    file:
+      path: a2enmod.sh
+      state: absent
+    delegate_to: localhost
+    run_once: true
+
+  - name: restart apache2
+    service: name=apache2 state=restarted

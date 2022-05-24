@@ -1,0 +1,25 @@
+---
+- name: Install SNMP
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Install snmp packages
+    apt: name=snmpd state=latest
+
+  - name: Enable snmp service
+    service: name=snmpd enabled=yes
+    
+  - name: Restart snmpd
+    action: service name=snmpd state=restarted
+
+  - name: Insert New line
+    blockinfile:
+      path: /etc/snmp/snmpd.conf
+      insertafter: "rocommunity"
+      content: |
+        rocommunity public
+
+  - name: Restart SNMPD Service
+    action: service name=snmpd state=restarted

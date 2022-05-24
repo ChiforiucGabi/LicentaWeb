@@ -1,0 +1,20 @@
+---
+- name: Install Lotus Core CMS 1.0.1
+  hosts: all
+  become: true
+
+  tasks:
+
+  - name: download Lotus Core CMS 1.0.1 packages
+    get_url:
+      url: http://cfhcable.dl.sourceforge.net/project/lotuscore/%5Bphpbb3%5D%20Lotus%20Core%20CMS/v1.0.1/v1.0.1.zip?ts=gAAAAABiBSHmhzN4bwHnHdRJm0f3INYrzmcvaKP8xAEmdeBWmuLZyFMze3c_ulzJa640RRsZ2woYpjFQ1Ab0iXvvhZVN87O8XQ%3D%3D
+      dest: /usr/local
+
+  - name: install unzip
+    script: comm.sh 
+
+  - name: extract lotus packages
+    ansible.builtin.unarchive:
+      src: /usr/local/v1.0.1.zip
+      dest: /usr/local/
+      remote_src: yes
