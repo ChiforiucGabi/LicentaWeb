@@ -1,7 +1,7 @@
 import * as types from "./actionTypes";
 import axios from 'axios';
 
-const API = "http://127.0.0.1:5000"
+const API = "http://10.10.9.203:5000"
 
 const getServices = (services) => ({
     type: types.GET_SERVICES,
@@ -16,7 +16,7 @@ const getPlaybook = (text) => ({
 export const generatePlaybook = (selectedServices) => {
     return function (dispatch) {
         axios
-            .post(`${API}/generate-playbook`, selectedServices)
+            .post(`${API}/generate-playbookCR`, selectedServices)
             .then((resp) => dispatch(getPlaybook(resp.data)))
             .catch(err => console.log(err));
     };
@@ -25,7 +25,7 @@ export const generatePlaybook = (selectedServices) => {
 export const loadServices = () => {
     return function (dispatch) {
         axios
-            .get(`${API}/get-services`)
+            .get(`${API}/get-servicesCR`)
             .then((resp) => dispatch(getServices(resp.data)))
             .catch(err => console.log(err));
     };

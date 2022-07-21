@@ -201,3 +201,8 @@ body {
   margin-top: 1.5%;
   margin-left: 71%
 }
+
+#VM_ID_Error {
+  margin-top: 2%;
+  color: red !important;
+}

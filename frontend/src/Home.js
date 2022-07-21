@@ -4,6 +4,8 @@ import { Navbar, Container, Col, Offcanvas, Card, ToggleButton, Button, Badge, L
 import { useDispatch, useSelector } from 'react-redux';
 import { loadServices, generatePlaybook } from './redux/actions';
 import { BsFillXCircleFill, BsBoxArrowDown } from "react-icons/bs";
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
 
 
 const Home = () => {
@@ -19,6 +21,18 @@ const Home = () => {
 
     const handleClose = () => setShow(false);
     const toggleShow = () => setShow((s) => !s);
+
+    const [showModal, setShowModal] = useState(false);
+
+    const handleCloseModal = () => setShowModal(false);
+    const handleShowModal = () => setShowModal(true);
+
+    const [visibility, setVisibility] = useState("hidden");
+    const [id, setId] = useState("");
+
+    const onChangeHandler = event => {
+        setId(event.target.value);
+    };
 
     useEffect(() => {
         dispatch(loadServices());
@@ -80,7 +94,16 @@ const Home = () => {
     }
 
     function submitGeneratePlaybook() {
-        dispatch(generatePlaybook(servicesNames));
+        var finalList = new Array();
+
+        if (id == '') {
+            setVisibility("visible")
+            return;
+        }
+
+        finalList.push(id);
+        finalList = finalList.concat(servicesNames);
+        dispatch(generatePlaybook(finalList));
         handleClose();
         routeChange();
     }
@@ -105,11 +128,39 @@ const Home = () => {
                                 </ListGroup.Item>
 
                             ))}
-                            <Button className='generate_playbook_button' onClick={() => submitGeneratePlaybook()} style={{ position: "absolute", bottom: "2%", left: "30%" }} >Generate playbook</Button>
+                            <Button className='generate_playbook_button' onClick={() => handleShowModal()} style={{ position: "absolute", bottom: "2%", left: "30%" }} >Generate playbook</Button>
                         </ListGroup>
                     </Offcanvas.Body>
                 </Offcanvas>
             </Navbar>
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Please Provide Machine ID</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                            <Form.Label>VM ID</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Kali-Linux-2020_1644"
+                                autoFocus
+                                value={id}
+                                onChange={onChangeHandler}
+                            />
+                            <Form.Label id="VM_ID_Error" style={{ "visibility": visibility }}>Please enter VM ID!</Form.Label>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={() => submitGeneratePlaybook()}>
+                        Generate Playkook
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Container style={{ "flexWrap": "wrap", "display": "flex", 'justifyContent': 'center' }}>
                 {services && services.map((item, index) => (
                     < Col key={item.name} style={{ 'maxWidth': 'min-content' }}>
