@@ -18,25 +18,6 @@
     apt: "name=krb5-admin-server state=present"
 
   - name: Makekrb5 newrealm
-    ansible.builtin.shell: 
-      cmd: krb5_newrealm
+    shell: "krb5_newrealm"
+    args: 
       stdin: "\n"
-  
-  # centos 
-  # - name: Copy client configuration file
-  #   template:
-  #     src: krb5.conf.j2
-  #     dest: /etc/krb5.conf
-  
-  # - name: Create initial Kerberos database
-  #   shell: kdb5_util -P {{ master_db_pass }} create -s
-  
-  # - name: Start Kerberos services
-  #   service:
-  #     name: "{{ item }}"
-  #     state: started
-  #     enabled: yes
-  #   with_items: "{{ krb_service }}"
-  
-  # - name: Create an admin for administering Kerberos server
-  #   shell: kadmin.local -q "addprinc -pw {{ kadmin_pass }} {{ kadmin_user }}/admin"

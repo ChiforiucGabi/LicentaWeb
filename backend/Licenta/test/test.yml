@@ -1,7 +1,0 @@
-- hosts: all
-  become: yes
-  tasks:
-    - name: cp folder
-      copy:
-        src: /home/gchiforiuc/Licenta/testFile.txt
-        dest: /home

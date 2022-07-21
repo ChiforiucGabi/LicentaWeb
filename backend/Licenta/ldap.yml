@@ -9,3 +9,6 @@
 
   - name: Install Ldap
     apt: name=389-ds state=latest
+
+  - name: Install Ldap - base
+    apt: name=389-ds-base state=latest

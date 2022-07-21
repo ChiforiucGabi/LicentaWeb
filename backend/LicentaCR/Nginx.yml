@@ -1,0 +1,77 @@
+- name: Installing Nginx
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+    
+  tasks:
+    - name: Install nginx
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y nginx"
+
+    - name: Copy nginx config file
+      vmware_guest_file_operation:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       copy:
+           src: "Nginx/nginx.conf"
+           dest: "/etc/nginx/sites-available/default"
+           overwrite: True
+
+    - name: Enable configuration
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/link"
+       vm_shell_args: "/etc/nginx/sites-enabled/default /etc/nginx/sites-available/default"
+
+    - name: Copy index.html
+      vmware_guest_file_operation:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       copy:
+           src: "Nginx/index.html.j2"
+           dest: "/usr/share/nginx/html/index.html"
+           overwrite: True
+
+    - name: Restart nginx
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/sbin/service"
+       vm_shell_args: "nginx restart"

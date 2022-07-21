@@ -1,0 +1,67 @@
+- name: Installing SNMP
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+    
+  tasks:
+    - name: Install snmp packages
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y snmpd"
+
+    - name: Enable snmp service
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/sbin/service"
+       vm_shell_args: "vsftpd enable"
+
+    - name: Restart snmpd
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}" 
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/sbin/service"
+       vm_shell_args: "snmpd restart"
+
+  # - name: Insert New line
+  #   blockinfile:
+  #     path: /etc/snmp/snmpd.conf
+  #     insertafter: "rocommunity"
+  #     content: |
+  #       rocommunity public
+
+    - name: Restart snmpd
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}" 
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/sbin/service"
+       vm_shell_args: "snmpd restart"

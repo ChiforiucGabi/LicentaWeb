@@ -1,0 +1,61 @@
+---
+- name: install apache ofbiz
+  hosts: all
+  become: true
+  
+  vars:
+    ofbiz_apache_download_path: 'https://www.apache.org/dyn/closer.lua/ofbiz'
+    ofbiz_admin_user: admin
+    ofbiz_download_path: "{{ ofbiz_apache_download_path }}"
+    ofbiz_group: ofbiz
+    ofbiz_install_openjdk: false
+    ofbiz_openjdk_package: 'openjdk-8-jdk-headless'
+    ofbiz_user: ofbiz
+    ofbiz_user_home_directory: /opt/ofbiz
+    ofbiz_version: 17.12.09
+    
+  tasks:
+  - name: Group for ofbiz user
+    group:
+      name: "{{ ofbiz_group }}"
+
+  - name: ofbiz user
+    user:
+      comment: Apache OFBiz
+      group: "{{ ofbiz_group }}"
+      home: "{{ ofbiz_user_home_directory }}"
+      name: "{{ ofbiz_user }}"
+
+  - name: Import OpenJDK tasks
+    import_tasks: openjdk.yml
+    when: ofbiz_install_openjdk
+
+  - name: Test if OFBiz is already installed
+    stat:
+      path: "{{ ofbiz_user_home_directory }}/apache-ofbiz-{{ ofbiz_version }}"
+    register: ofbiz_installation
+
+  - name: Find closest Apache mirror
+    uri:
+      return_content: yes
+      url: https://www.apache.org/dyn/closer.cgi?as_json=1
+    register: ofbiz_apache_mirror_data
+    when:
+      - ofbiz_installation.stat.exists != True
+      - ofbiz_download_path == ofbiz_apache_download_path
+
+  - name: Change download path to closest mirror
+    set_fact:
+      ofbiz_download_path: "{{ ofbiz_apache_mirror_data.json.preferred }}ofbiz"
+    when:
+      - ofbiz_installation.stat.exists != True
+      - ofbiz_download_path == ofbiz_apache_download_path
+
+  - name: Download and extract the OFBiz software
+    unarchive:
+      creates: "{{ ofbiz_user_home_directory }}/apache-ofbiz-{{ ofbiz_version }}/LICENSE"
+      dest: "{{ ofbiz_user_home_directory }}"
+      group: "{{ ofbiz_group }}"
+      owner: "{{ ofbiz_user }}"
+      remote_src: yes
+      src: "{{ ofbiz_download_path }}/apache-ofbiz-{{ ofbiz_version }}.zip"

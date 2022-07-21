@@ -1,0 +1,313 @@
+- name: Installing Laravel
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+
+  tasks:
+    - name: Update APT
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "update"
+
+    - name: Install Apache
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install apache2"
+  
+    - name: Make sure Apache 2 is running
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/sbin/service"
+       vm_shell_args: "apache2 start"
+
+    - name: Ensure apache2 enabled
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/sbin/service"
+       vm_shell_args: "apache2 enable"
+
+    - name: Install php
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php"
+
+    - name: Install libapache2-mod-php
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install libapache2-mod-php"
+
+    - name: Install php-mbstring
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-mbstring"
+
+    - name: Install php-cli
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-cli"
+
+    - name: Install php-bcmath
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-bcmath"
+
+    - name: Install php-json
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-json"
+
+    - name: Install php-xml
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-xml"
+
+    - name: Install php-zip
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-zip"
+
+    - name: Install php-pdo
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-pdo"
+
+    - name: Install php-common
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-common"
+
+    - name: Install php-tokenizer
+      vmware_vm_shell:
+        hostname: "{{ vcenter_ip }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter: "{{ datacenter }}"
+        validate_certs: no
+        vm_id: "{{ vm_id }}"
+        vm_username: root
+        vm_password: kali
+        vm_shell: "/usr/bin/apt"
+        vm_shell_args: "install php-tokenizer"
+
+    - name: Install php-mysql
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install php-mysql"
+    
+    - name: Install mariadb-server
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install mariadb-server"
+
+    - name: curl composer
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/usr/local"
+       vm_shell: "/usr/bin/curl"
+       vm_shell_args: "-sS https://getcomposer.org/installer | php"
+       wait_for_process: True
+
+    - name: move composer
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/usr/local"
+       vm_shell: "/usr/bin/mv"
+       vm_shell_args: "/usr/local/composer.phar /usr/local/bin/composer"
+       wait_for_process: True
+
+    - name: add permission
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/chmod"
+       vm_shell_args: "+x /usr/local/bin/composer"
+
+    - name: Install laravel
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/var/www/html"
+       vm_shell: "/usr/local/bin/composer"
+       vm_shell_args: "create-project laravel/laravel laravelapp; echo 'yes'"
+       wait_for_process: True
+
+  # - name: Vopy config file
+  #   copy:
+  #     src: laravel.conf
+  #     dest: /etc/apache2/sites-available/laravel.conf
+
+  # - name: Create a temporary local script to run a2ensite laravel.conf
+  #   copy:
+  #     dest: a2ensite.sh
+  #     content: 'sudo a2ensite laravel.conf'
+  #   delegate_to: localhost
+  #   no_log: True
+  #   run_once: true
+
+
+  # - name: Create a temporary local script to run a2enmod rewrite
+  #   copy:
+  #     dest: a2enmod.sh
+  #     content: 'sudo a2enmod rewrite'
+  #   delegate_to: localhost
+  #   no_log: True
+  #   run_once: true
+
+
+  # - name: restart apache2
+    # service: name=apache2 state=restarted

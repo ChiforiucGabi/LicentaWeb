@@ -1,0 +1,99 @@
+- name: Install MySQL database server
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1674"
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "update"
+
+  - name: Install mysql-server
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install mysql-server"
+
+  - name: Install mysql-client
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install mysql-client"
+
+  - name: Install python3-mysqldb
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install python3-mysqldb"
+
+  - name: stop mysql
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/sbin/service"
+     vm_shell_args: "mysql stop"
+
+  - name: Usermod command
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/sbin/usermod"
+     vm_shell_args: "-d /var/lib/mysql/ mysql"
+
+  - name: start mysql
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/sbin/service"
+     vm_shell_args: "mysql start"

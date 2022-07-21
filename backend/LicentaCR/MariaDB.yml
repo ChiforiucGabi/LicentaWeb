@@ -1,0 +1,192 @@
+- name: Installing MariaDB 
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1674"
+
+  tasks:
+  - name: Install Utility software
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install -y software-properties-common"
+
+  - name: Install gnupg2
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install -y gnupg2"
+
+  - name: Install gpg
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install -y gpg"
+
+  - name: Install apt-transport-https
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install -y apt-transport-https"
+
+  - name: Install lsb-release
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install -y lsb-release"
+
+  - name: Install ca-certificates
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install -y ca-certificates"
+
+  - name: Install Utility python3-mysqldb
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install python3-mysqldb"
+
+  - name: Wget the repository
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/wget"
+     vm_shell_args: "https://downloads.mariadb.com/MariaDB/mariadb_repo_setup"
+
+  - name: bash mariadb_repo_setup
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "mariadb_repo_setup --os-type=debian --os-version=bullseye --mariadb-server-version=10.7"
+
+  - name: Install MariaDB Server
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install mariadb-server"
+
+  - name: Install MariaDB Client
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install mariadb-client"
+
+  - name: Update APT
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "update"
+
+  - name: start mariadb
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/sbin/service"
+     vm_shell_args: "mariadb start"
+
+  - name: enable mariadb
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/sbin/service"
+     vm_shell_args: "mariadb enable"

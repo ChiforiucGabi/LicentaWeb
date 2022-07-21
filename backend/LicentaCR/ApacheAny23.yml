@@ -1,0 +1,158 @@
+---
+- name: install ApacheAny23
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "update"
+
+  - name: Install Java
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install openjdk-11-jdk"
+
+  - name: "Export java path variable"
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: '-c export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"'
+     wait_for_process: yes
+    register: java_path
+
+  - name: "Export $PATH variable"
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "-c export PATH=$JAVA_HOME/bin:$PATH"
+     wait_for_process: yes
+    register: path
+
+  - name: Source /etc/environement
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "-c  'source /etc/environment'"
+     wait_for_process: yes
+    register: sourced
+
+  - debug:
+      msg: "{{ sourced }}"
+
+  - name: download any23 packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/wget"
+     vm_shell_args: "https://dlcdn.apache.org/any23/2.7/apache-any23-cli-2.7.tar.gz"
+
+  - name: extract any23 packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/tar"
+     vm_shell_args: "xvzf apache-any23-cli-2.7.tar.gz"
+
+
+  - name: "Export any23 path variable"
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: '-c export ANY23_HOME="/usr/local/apache-any23-2.7/bin"'
+     wait_for_process: yes
+
+  - name: "Export $PATH variable"
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "-c export PATH=$ANY23_HOME/bin:$PATH"
+     wait_for_process: yes
+
+  - name: Source /etc/environement
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "-c  'source /etc/environment'"
+     wait_for_process: yes
+    register: sourced
+
+  - debug:
+      msg: "{{ sourced }}"

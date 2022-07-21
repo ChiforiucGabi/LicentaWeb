@@ -19,7 +19,7 @@
          - openjdk-11-jdk
 
   - name: "Check if path exists"
-    ansible.builtin.command: grep jvm /etc/environment
+    shell: "grep jvm /etc/environment"
     register: java_path
     ignore_errors: true
 
@@ -42,7 +42,7 @@
       remote_src: yes
 
   - name: "Check if any23 path exists"
-    ansible.builtin.command: grep any23 /etc/environment
+    shell: "grep any23 /etc/environment"
     register: any23_path
     ignore_errors: true
 

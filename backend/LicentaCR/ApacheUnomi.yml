@@ -1,0 +1,197 @@
+- name: Install Apache Unomi
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "update"
+
+  - name: Install Java 8
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install openjdk-8-jre-headless"
+
+  - name: download UNOMI 1.5.4
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/wget"
+     vm_shell_args: "http://apache.mirrors.pair.com/unomi/1.5.4/unomi-1.5.4-bin.tar.gz"
+
+  - name: extract unomi packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/tar"
+     vm_shell_args: "xvzf unomi-1.5.4-bin.tar.gz"
+
+  - name: Apt install apt-transport-https package
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install apt-transport-https"
+
+  - name: Apt install curl package
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install curl"
+
+  - name: Apt install wget package
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install wget"
+  
+  - name: download elasticsearch-5.6.3.deb
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/wget"
+     vm_shell_args: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.3.deb"
+
+  - name: dpkg elasticsearch-5.6.3.deb
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/dpkg"
+     vm_shell_args: "-i elasticsearch-5.6.3.deb"
+
+  - name: uncomment line
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/sed"
+     vm_shell_args: '-ri "s:^([ ]*)[#]+[ ]?([ ]*cluster.name):\\1\\2:" /etc/elasticsearch/elasticsearch.yml'
+
+  - name: start elasticsearch
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/sbin/service"
+     vm_shell_args: "elasticsearch start"
+
+  - name: Export java home
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: '-c export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"'
+
+  - name: "Export $PATH variable"
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "-c export PATH=$ANY23_HOME/bin:$PATH"
+     wait_for_process: yes
+
+  - name: Source /etc/environement
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/bash"
+     vm_shell_args: "-c  'source /etc/environment'"
+     wait_for_process: yes
+    register: sourced

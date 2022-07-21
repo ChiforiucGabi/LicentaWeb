@@ -1,0 +1,60 @@
+- name: Installing Kerberos
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+    
+  tasks:
+    - name: Link /dev/random to /dev/urandom
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/link"
+       vm_shell_args: "/dev/random /dev/urandom"
+
+    - name: Install krb5-kdc packages
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y krb5-kdc"
+
+    - name: Install krb5-admin-server packages
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y krb5-admin-server"
+
+    - name: Makekrb5 newrealm
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/bash"
+       vm_shell_args: "krb5_newrealm"

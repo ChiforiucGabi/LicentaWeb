@@ -10,14 +10,14 @@
 
   - name: download tomcat server packages
     get_url:
-      url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.76/bin/apache-tomcat-8.5.76.tar.gz
+      url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.78/bin/apache-tomcat-8.5.78.tar.gz
       dest: /usr/local
 
   - name: extract tomcat packages
     unarchive:
-      src: /usr/local/apache-tomcat-8.5.76.tar.gz
+      src: /usr/local/apache-tomcat-8.5.78.tar.gz
       dest: /usr/local
       remote_src: yes
 
   - name: start tomcat services
-    shell: nohup /usr/local/apache-tomcat-8.5.76/bin/startup.sh
+    shell: nohup /usr/local/apache-tomcat-8.5.78/bin/startup.sh

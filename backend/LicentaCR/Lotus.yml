@@ -1,0 +1,49 @@
+- name: Install Lotus Core CMS 1.0.1
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+    
+  tasks:
+    - name: Install Citrix Workspace
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/usr/local"
+       vm_shell: "/usr/bin/wget"
+       vm_shell_args: "http://cfhcable.dl.sourceforge.net/project/lotuscore/%5Bphpbb3%5D%20Lotus%20Core%20CMS/v1.0.1/v1.0.1.zip?ts=gAAAAABiBSHmhzN4bwHnHdRJm0f3INYrzmcvaKP8xAEmdeBWmuLZyFMze3c_ulzJa640RRsZ2woYpjFQ1Ab0iXvvhZVN87O8XQ%3D%3D"
+
+    - name: install zip/unzip
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install unzip"
+
+    - name: extract lotus packages
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/usr/local"
+       vm_shell: "/usr/bin/unzip"
+       vm_shell_args: "/usr/local/v1.0.1.zip"

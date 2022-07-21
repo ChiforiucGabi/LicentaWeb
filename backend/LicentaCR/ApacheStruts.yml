@@ -1,0 +1,62 @@
+- name: Install Apache Struts
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+
+  tasks:
+  - name: Install OpenJDK
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install openjdk-11-jre-headless"
+
+  - name: download struts packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/wget"
+     vm_shell_args: "https://dlcdn.apache.org/struts/2.5.29/struts-2.5.29-all.zip"
+
+  - name: install zip/unzip
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install unzip"
+
+  - name: extract struts packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/unzip"
+     vm_shell_args: "struts-2.5.29-all.zip"

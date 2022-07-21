@@ -1,0 +1,150 @@
+- name: Installing VNC
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1674"
+    default_passwd: student
+    vnc_client_res: "1024x600"
+    
+  tasks:
+    - name: Install tightvncserver
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y tightvncserver"
+
+    - name: Install the GUI and VNC Packages
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y gnome-core"
+
+    - name: Install the GUI and VNC Packages 2
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/apt"
+       vm_shell_args: "install -y vnc4server"
+
+    - name: Copy the defult password file
+      vmware_guest_file_operation:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       copy:
+           src: "VNC/password"
+           dest: "/tmp/file"
+           overwrite: True
+
+    - name: bash vncserver command
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/usr/local"
+       vm_shell: "/usr/bin/bash"
+       vm_shell_args: "sudo -u student -i vncserver </tmp/file >/tmp/vncpasswd.1 2>/tmp/vncpasswd.2"
+
+    - name: Copy the vncservers.conf file in /etc/ directory
+      vmware_guest_file_operation:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       copy:
+           src: "VNC/vncservers.conf.j2"
+           dest: "/etc/vncservers.conf"
+           overwrite: True
+
+    - name: Copy the modified "xstartup" file
+      vmware_guest_file_operation:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       copy:
+           src: "VNC/xstartup.j2"
+           dest: "/root/.vnc/xstartup"
+           overwrite: True
+
+    - name: Create a file vncserver in /etc/init.d/directory
+      vmware_guest_file_operation:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       copy:
+           src: "VNC/vncserver.j2"
+           dest: "/etc/init.d/vncserver"
+           overwrite: True
+
+    - name: Add vncserver service to default runlevels
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell_cwd: "/usr/local"
+       vm_shell: "/usr/sbin/update-rc.d"
+       vm_shell_args: "vncserver defaults"
+
+    - name: Restart VNC Service
+      vmware_vm_shell:
+       hostname: "{{ vcenter_ip }}"
+       username: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+       datacenter: "{{ datacenter }}"
+       validate_certs: no
+       vm_id: "{{ vm_id }}"
+       vm_username: root
+       vm_password: kali
+       vm_shell: "/usr/bin/systemctl"
+       vm_shell_args: "list-units /etc/init.d/vncserver restart vncserver"

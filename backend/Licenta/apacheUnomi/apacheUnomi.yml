@@ -19,7 +19,7 @@
          - openjdk-8-jdk
 
   - name: "Check if path exists"
-    ansible.builtin.command: grep jvm /etc/environment
+    shell: "grep jvm /etc/environment"
     register: java_path
     ignore_errors: true
 

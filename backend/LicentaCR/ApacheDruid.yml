@@ -1,0 +1,96 @@
+- name: Install Apache Druid
+  hosts: localhost
+  connection: local
+  become: True
+
+  vars:
+    vm_id: "Kali-Linux-2020_1644"
+
+  tasks:
+  - name: Update APT package manager repositories cache
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "update"
+
+  - name: Install Java 8
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/apt"
+     vm_shell_args: "install openjdk-8-jre-headless"
+
+  - name: download druid packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/wget"
+     vm_shell_args: "https://dlcdn.apache.org/druid/0.22.0/apache-druid-0.22.0-bin.tar.gz"
+
+  - name: extract druid packages
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local"
+     vm_shell: "/usr/bin/tar"
+     vm_shell_args: "xvzf apache-druid-0.22.0-bin.tar.gz"
+
+  - name: "TEST"
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell: "/usr/bin/ls"
+     vm_shell_args: '-a'
+     vm_shell_cwd: "/usr/local/apache-druid-0.22.0-bin"
+     wait_for_process: yes
+    register: java_path
+    ignore_errors: true
+
+  - debug:
+      msg: "{{ java_path }}"  
+
+  - name: start druid services
+    vmware_vm_shell:
+     hostname: "{{ vcenter_ip }}"
+     username: "{{ vcenter_username }}"
+     password: "{{ vcenter_password }}"
+     datacenter: "{{ datacenter }}"
+     validate_certs: no
+     vm_id: "{{ vm_id }}"
+     vm_username: root
+     vm_password: kali
+     vm_shell_cwd: "/usr/local/apache-druid-0.22.0/bin"
+     vm_shell: "/usr/bin/sh"
+     vm_shell_args: "-c ./start-micro-quickstart &"

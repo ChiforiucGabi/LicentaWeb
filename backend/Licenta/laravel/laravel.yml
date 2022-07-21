@@ -10,14 +10,15 @@
 
   - name: Install Apache
     apt: name=apache2 update_cache=yes state=latest
+  
+  - name: Make sure Apache 2 is running
+    ansible.builtin.systemd:
+      state: started
+      name: apache2
 
-  - name: Start Apache 2
-    ansible.builtin.command: systemctl start apache2
+  - name: Ensure apache2 enabled
     become: yes
-
-  - name: Enable Apache 2
-    ansible.builtin.command: systemctl enable apache2
-    become: yes
+    command: systemctl enable apache2
 
   - name: Install php
     apt: name=php state=latest
@@ -150,9 +151,9 @@
     when: laravel_exists.stat.exists
 
   - name: Install laravel
-    ansible.builtin.shell:
-      cmd: composer create-project laravel/laravel laravelapp
-      stdin: 'yes\n'
+    shell: "composer create-project laravel/laravel laravelapp"
+    args:
+      stdin: "yes"
     become: yes
     when: not laravel_exists.stat.exists
 
